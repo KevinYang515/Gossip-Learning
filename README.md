@@ -6,3 +6,7 @@ This is a simple reproduction to partly implement and simulate the paper of [Gos
 ## Example
 
     python simple_gos_learning.py
+
+We can set how many devices we want.
+
+    python simple_gos_learning.py 10

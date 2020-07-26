@@ -42,6 +42,8 @@ def step_decay(epoch):
 def main(argv):
     # Read detailed settings from json file
     detailed_setting = read_setting()
+    if (len(argv) == 2):
+        detailed_setting["training_info"]["num_device"] = int(argv[1])
     # Load CIFAR-10 data
     train_images, train_labels, test_images, test_labels = load_cifar10_data()
     # Transfer train and test label to be categorical
