@@ -1,0 +1,20 @@
+{
+    "file_source": {
+        "data_distribution_file": "./data/file/data_distribution_3000_new_14.txt",
+        "data_information_file": "./data/file/device_info_3000.txt"
+    },
+    "device_list": {
+        "10000": [0, 20, 22, 23, 81],
+        "30000": [0, 20, 21, 22, 23, 27, 37, 65, 73, 81, 95, 98]
+    },
+    "training_info": {
+        "total_demand": 50000,
+        "num_device": 5, 
+        "num_center_epoch": 1, 
+        "num_local_epoch": 5,
+        "num_round": 3,
+        "center_batch_size": 64,
+        "local_batch_size": 64,
+        "show": 0
+    }
+}

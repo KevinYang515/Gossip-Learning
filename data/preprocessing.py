@@ -6,6 +6,13 @@ from keras.utils import to_categorical
 import random
 
 def random_contrast(im, lower=0.2, upper=1.8):
+    """
+    It will randomly adjust contrast of input image.
+    :param image to be adjusted
+    :param contrast lower range (default 0.2)
+    :param contrast higher range (default 1.8)
+    :return processed image
+    """
     prob = randint(0, 1)
     if prob == 1:
         alpha = random.uniform(lower, upper)
@@ -16,6 +23,12 @@ def random_contrast(im, lower=0.2, upper=1.8):
         return im
 
 def random_bright(im, delta=63):
+    """
+    It will randomly adjust brightness of input image.
+    :param image to be adjusted
+    :param brightness range (default range from -63 to 63)
+    :return processed image
+    """
     prob = randint(0,1)
     if prob == 1:
         delta = random.uniform(-delta, delta)
@@ -26,12 +39,24 @@ def random_bright(im, delta=63):
         return im
 
 def per_image_standardization(img):
+    """
+    It will adjust standardization of input image.
+    :param image to be adjusted
+    :return processed image
+    """
     num_compare = img.shape[0] * img.shape[1] * 3
     img_arr=np.array(img)
     img_t = (img_arr - np.mean(img_arr))/max(np.std(img_arr), 1/num_compare)
     return img_t
 
 def random_crop(img, width, height):
+    """
+    It will randomly crop input image with width and height.
+    :param image to be adjusted
+    :param crop width
+    :param crop height
+    :return processed image
+    """
     width1 = randint(0, img.shape[0] - width)
     height1 = randint(0, img.shape[1] - height)
     cropped = img[height1:height1+height, width1:width1+width]
@@ -39,6 +64,11 @@ def random_crop(img, width, height):
     return cropped
 
 def random_flip_left_right(image):
+    """
+    It will randomly filp the input image left or right.
+    :param image to be flipped
+    :return processed image
+    """
     prob = randint(0, 1)
     if prob == 1:
         image = np.fliplr(image)

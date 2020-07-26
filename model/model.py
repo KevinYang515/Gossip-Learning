@@ -1,35 +1,19 @@
-import tensorflow as tf
-from tensorflow.keras import layers, models
+from model.device_model import Device_Model
 
-def generate_weight(node, device_client_dic, num_node):
-    temp = []
-    
-    for j in range(num_node):
-        if j in device_client_dic[node]:
-            temp.append(1/(max(len(device_client_dic[node]), len(device_client_dic[j])) + 1))
-        else:
-            temp.append(0)
-            
-    temp_v = 0    
-    for j in device_client_dic[node]:
-        temp_v += temp[j]
-        
-    temp[node] = 1 - temp_v
-    
-    return temp
+def init_model(device_num, device_client_dic, num_node):
+    model_x = Device_Model(device_num)
+    model_x.history['val_loss'] = [2.3840]
+    model_x.history['val_acc'] = [0.0976]
+    model_x.add_client_list(device_client_dic[device_num], device_client_dic)
+    model_x.set_weight(device_client_dic, num_node)
 
-def define_model():
-    return tf.keras.Sequential([
-        layers.Conv2D(64, (5, 5), padding='same', activation='relu', input_shape=(24, 24, 3)),
-        layers.MaxPool2D(pool_size=3, strides=2, padding='same'),
-        layers.BatchNormalization(),
-        layers.Conv2D(64, (5,5), padding='same', activation='relu'),
-        layers.MaxPool2D(pool_size=3, strides=2, padding='same'),
-        layers.BatchNormalization(),
-        layers.Flatten(),
-        layers.Dense(384, activation='relu'),
-        layers.Dropout(0.5),
-        layers.Dense(192, activation='relu'),
-        layers.Dropout(0.5),
-        layers.Dense(10, activation='softmax')
-    ])
+    return model_x
+
+def record_history(model_x, history_temp):
+    """
+    Record accuracy and loss result to history_total
+    :param the model which history needs to be appended new result of accuracy and loss
+    :param the dictionary stored the accuracy and loss for this round
+    """
+    model_x.history['val_loss'].append(history_temp[0])
+    model_x.history['val_acc'].append(history_temp[1])

@@ -1,4 +1,11 @@
-def generate_ring():
+def generate_ring(num_node):
+    """
+    It will generate the ring relationship.
+    :param number of nodes
+    :return dictionary for relationship of each node
+    """
+    device_client_dic = {}
+
     for n in range(num_node):
         next_node = (n + 1) % num_node
         last_node = n - 1
@@ -9,3 +16,5 @@ def generate_ring():
             continue
             
         device_client_dic[n] = [last_node, next_node]
+
+    return device_client_dic
