@@ -1,0 +1,11 @@
+# conda install -c anaconda tensorflow-gpu=1.15
+tensorflow==1.15.0
+tensorflow-gpu==1.15.0
+# # conda install -c conda-forge matplotlib
+# matplotlib==3.3.0
+# conda install -c conda-forge opencv
+opencv==4.1.0
+# conda install -c anaconda scikit-learn
+scikit-learn==0.23.1
+# conda install -c conda-forge keras=2.2.4
+keras==2.2.4
