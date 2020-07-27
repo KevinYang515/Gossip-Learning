@@ -13,8 +13,8 @@ import tensorflow as tf
 import numpy as np
 import random
 from data.preprocessing import random_crop, prepare_for_training_data_selected_random_range, preprocessing_for_training, preprocessing_for_testing
-from model.model import record_history, init_model
-from data.read_data import read_setting
+from model.model import init_model, record_history_print, print_all_device_history
+from data.read_data import read_simple_setting
 from data.relationship import generate_ring
 from data.data_utils import load_cifar10_data, train_test_label_to_categorical
 
@@ -28,8 +28,8 @@ with tf.device('/device:GPU:0'):
     config = tf.compat.v1.ConfigProto()
     config.gpu_options.allow_growth = True
     sess = tf.compat.v1.Session(config=config)
-_, epo = 0, 0
 
+_, epo = 0, 0
 def step_decay(epoch):
     epoch = _ + epo
     # initial_lrate = 1.0 # no longer needed
@@ -41,7 +41,7 @@ def step_decay(epoch):
 
 def main(argv):
     # Read detailed settings from json file
-    detailed_setting = read_setting()
+    detailed_setting = read_simple_setting()
     if (len(argv) == 2):
         detailed_setting["training_info"]["num_device"] = int(argv[1])
     # Load CIFAR-10 data
@@ -124,14 +124,12 @@ def main(argv):
                                                                             batch_size=training_info["center_batch_size"],
                                                                             verbose=training_info["show"])
 
-            #Record each round accuracy and loss for every device
-            record_history(locals()['model_{}'.format(device)], history_temp)
-            print("Round: " + str(_) + ", Device:" + str(device) + ", " + "Result: ", str(history_temp[1]))
+            #Record and print each round accuracy and loss for every device
+            record_history_print(_, device, locals()['model_{}'.format(device)], history_temp)
+            # print("Round: " + str(_) + ", Device:" + str(device) + ", " + "Result: ", str(history_temp[1]))
 
     for device in device_client_dic:
-        print("============== Device: " + str(device) + " ==============")
-        print("Accuracy: " + str(locals()['model_{}'.format(device)].history['val_acc']))
-        print("Loss: " + str(locals()['model_{}'.format(device)].history['val_loss']))
+        print_all_device_history(device, locals()['model_{}'.format(device)])
 
 if __name__ == '__main__':
     main(sys.argv)

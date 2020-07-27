@@ -1,15 +1,7 @@
 {
-    "file_info": {
-        "file_type": ["algorithm", "greedy_edge", "greedy_edge2", "OPT"],
-        "file_value":{
-            "start": 30,
-            "end": 60,
-            "step": 7
-        }
-    },
     "training_info": {
         "total_demand": 50000,
-        "num_device": 15, 
+        "num_device": 5, 
         "num_center_epoch": 1, 
         "num_local_epoch": 5,
         "num_round": 3,

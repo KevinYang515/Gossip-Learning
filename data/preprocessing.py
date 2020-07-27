@@ -88,7 +88,7 @@ def preprocessing_for_testing(images):
     
     return distorted_image
 
-# Prepare for the training data when we provide the data range (for Gossip Learning)
+# Prepare for the training data with providing the data range (for Gossip Learning)
 def prepare_for_training_data_selected_random_range(device_num, data_range, train_images, train_labels):
     image, label = train_images, train_labels
 
@@ -119,8 +119,9 @@ def prepare_for_training_data_selected_random_range(device_num, data_range, trai
         
     return s0[0], to_categorical(s0[1], 10)
 
-# Prepare for the training data when we don't want to provide the data range (for Gossip Learning)
-def prepare_for_training_data_selected_random(device_num, device_data_amount):
+# Prepare for the training data without providing the data range (for Gossip Learning)
+def prepare_for_training_data_selected_random(device_num, device_data_amount, train_images, train_labels):
+
     temp_amount = round(device_data_amount/10)
     image, label = train_images, train_labels
     

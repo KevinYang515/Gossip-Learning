@@ -42,6 +42,16 @@ def read_data(data_distribution_file, data_information_file, num_class=10):
 
     return data_distribution
 
+def read_simple_setting():
+    """
+    Read detailed settings into dictionary
+    :return dictionary which contains file source, device list, and training information
+    """
+    with open('data/simple_detailed_settings.json' , 'r') as reader:
+        json_result = json.loads(reader.read())
+        
+    return json_result
+
 def read_setting():
     """
     Read detailed settings into dictionary
@@ -51,3 +61,31 @@ def read_setting():
         json_result = json.loads(reader.read())
         
     return json_result
+
+def read_data_gossip(file_name):
+    with open('data/file/graph_small/small_graph_0501/' + file_name, 'r') as f:
+        lines = f.readlines()
+        
+    device_client_dic = {}
+    for i in [y.split('\t')[:2] for y in [x for x in lines[1:]]]:
+        first_temp = int(i[0])
+        second_temp= int(i[1])
+
+        if first_temp not in device_client_dic:
+            device_client_dic[first_temp] = []
+        if second_temp not in device_client_dic:
+            device_client_dic[second_temp] = []
+
+        device_client_dic[first_temp].append(second_temp)
+        device_client_dic[second_temp].append(first_temp)
+    sort_dictionary(device_client_dic)
+    return device_client_dic
+
+def sort_dictionary(dic):
+    temp = sorted(dic.keys())
+    temp_dic = {}
+    
+    for key in temp:
+        temp_dic[key] = dic[key]
+    
+    return temp_dic
