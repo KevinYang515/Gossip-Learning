@@ -78,8 +78,8 @@ def read_data_gossip(file_name):
 
         device_client_dic[first_temp].append(second_temp)
         device_client_dic[second_temp].append(first_temp)
-    sort_dictionary(device_client_dic)
-    return device_client_dic
+    
+    return sort_dictionary(device_client_dic)
 
 def sort_dictionary(dic):
     temp = sorted(dic.keys())
