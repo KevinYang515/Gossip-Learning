@@ -119,7 +119,7 @@ def main(argv):
 
                 for device in device_client_dic:
                     #Evaluate with new weight
-                    test_d = np.stack([prep.preprocessing_for_testing(test_images[i]) for i in range(10000)], axis=0)
+                    test_d = np.stack([preprocessing_for_testing(test_images[i]) for i in range(10000)], axis=0)
 
                     test_new_image, test_new_label = shuffle(test_d, test_label, 
                                                             random_state=randint(1, train_images.shape[0]))
