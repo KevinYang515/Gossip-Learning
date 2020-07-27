@@ -51,11 +51,11 @@ def main(argv):
     callback = tf.keras.callbacks.LearningRateScheduler(step_decay)
     augment = ImageDataGenerator(preprocessing_function=preprocessing_for_training)
 
-    file_type = ['algorithm', 'greedy_edge', 'greedy_edge2', 'OPT']
     training_info = detailed_setting["training_info"]
+    file_info = detailed_setting["file_info"]
 
-    for f_r in range(45, 50, 7):
-        for f_t in file_type[2:]:
+    for f_r in range(file_info["file_value"]["start"], file_info["file_value"]["end"] + 1, file_info["file_value"]["step"]):
+        for f_t in file_info["file_type"]:
             file = str(f_r) + '_' + f_t + '.txt'
             device_client_dic = read_data_gossip(file)
             alg_selected_device = [training_info["total_demand"]/training_info["num_device"] for num in range(training_info["num_device"])]
@@ -68,9 +68,8 @@ def main(argv):
                 end_with = 0
 
                 for device in device_client_dic:
-                    if(_ == 0):
-                        #Define an estimator model
-                        #Initialize every device (e.g., all devices are initialized with same parameters)
+                    if (_ == 0):
+                        #Define an estimator model and initialize every device (e.g., all devices are initialized with same parameters)
                         locals()['model_{}'.format(device)] = init_model(device, device_client_dic, training_info["num_device"])
                         
                         temp_arange = []
