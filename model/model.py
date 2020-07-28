@@ -34,9 +34,30 @@ def record_history(model_x, history_temp):
     model_x.history['val_loss'].append(history_temp[0])
     model_x.history['val_acc'].append(history_temp[1])
 
+def training_once_for_gos(model_x, train_new_image, train_new_label, training_info, augment, callback):
+    """
+    It will make model_x train for one time.
+    :param the model for training
+    :param the training images for input model
+    :param the training labels for input model
+    :param dictionary for training detailed settings
+    :param function to be ececuted before every training epoch which is mostly for data preprocessing
+    :param callback function for adjusting learning rate (i.e., learning rate decay)
+    :return the result after training once
+    """
+    history_temp = model_x.weight.fit_generator(
+                        augment.flow(train_new_image, train_new_label, 
+                            batch_size=training_info["local_batch_size"]),
+                            epochs=1,
+                            callbacks=[callback],
+                            verbose=training_info["show"])
+    return history_temp
+
 def print_all_device_history(device, model_x):
     """
     Print accuracy and loss information of all devices
+    :param the device we want for printing
+    :param the model we want to show its accuracy and loss
     """
     print("\n================================== Device: " + str(device) + " ==================================")
     print("Accuracy: " + str(model_x.history['val_acc']))

@@ -10,17 +10,13 @@ os.environ["CUDA_VISIBLE_DEVICES"]="0"
 
 import sys
 import tensorflow as tf
-import numpy as np
-import random
-from data.preprocessing import random_crop, prepare_for_training_data_selected_random_range, preprocessing_for_training, preprocessing_for_testing
-from model.model import init_model, record_history_print, print_all_device_history
+from data.preprocessing import prepare_for_training_data_selected_random_range, preprocessing_for_training, separate_and_preprocess_for_gos, evaluate_with_new_model_for_gos
+from model.model import init_model, record_history_print, print_all_device_history, training_once_for_gos
 from data.read_data import read_setting, read_data_gossip
 from data.data_utils import load_cifar10_data, train_test_label_to_categorical
-from data.preprocessing import random_crop, prepare_for_training_data_selected_random, preprocessing_for_training, preprocessing_for_testing
 
 from math import floor
 from sklearn.utils import shuffle
-from random import randint
 from keras import backend as K
 from keras.preprocessing.image import ImageDataGenerator
 
@@ -49,6 +45,7 @@ def main(argv):
 
     # adjust parameters of the model
     callback = tf.keras.callbacks.LearningRateScheduler(step_decay)
+    # define the method for preprocessing
     augment = ImageDataGenerator(preprocessing_function=preprocessing_for_training)
 
     training_info = detailed_setting["training_info"]
@@ -85,22 +82,10 @@ def main(argv):
 
                         device_train_data[device] = [train_image_temp, train_label_temp]
 
-
                     #Local training on each device 
                     for epo in range(training_info["num_local_epoch"]):
-                        train_image_crop = np.stack([random_crop(device_train_data[device][0][i], 24, 24) for i in range(len(device_train_data[device][0]))], axis=0)
-
-                        for random_ in range(10):
-                            train_new_image, train_new_label = shuffle(train_image_crop, 
-                                                                    device_train_data[device][1], 
-                                                                    random_state=randint(0, train_image_crop.shape[0]))
-
-                        history_temp = locals()['model_{}'.format(device)].weight.fit_generator(
-                                                augment.flow(train_new_image, train_new_label, 
-                                                            batch_size=training_info["local_batch_size"]), 
-                                                            epochs=1, 
-                                                            callbacks=[callback],
-                                                            verbose=training_info["show"])
+                        train_new_image, train_new_label = separate_and_preprocess_for_gos(device_train_data[device])
+                        history_temp = training_once_for_gos(locals()['model_{}'.format(device)], train_new_image, train_new_label, training_info, augment, callback)
 
                     # Update from x^(t+1/2) to x^(t+1)   (line 4)
                     locals()['model_{}'.format(device)].update_parameter()
@@ -119,16 +104,7 @@ def main(argv):
 
                 for device in device_client_dic:
                     #Evaluate with new weight
-                    test_d = np.stack([preprocessing_for_testing(test_images[i]) for i in range(10000)], axis=0)
-
-                    test_new_image, test_new_label = shuffle(test_d, test_label, 
-                                                            random_state=randint(1, train_images.shape[0]))
-
-                    history_temp = locals()['model_{}'.format(device)].weight.evaluate(test_new_image, 
-                                                                                    test_new_label, 
-                                                                                    batch_size=training_info["center_batch_size"],
-                                                                                    verbose=training_info["show"])
-
+                    history_temp = evaluate_with_new_model_for_gos(locals()['model_{}'.format(device)], training_info, test_images, test_label)
                     #Record each round accuracy and loss for every device
                     record_history_print(_, device, locals()['model_{}'.format(device)], history_temp)
                         

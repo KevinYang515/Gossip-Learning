@@ -75,6 +75,11 @@ def random_flip_left_right(image):
     return image
 
 def preprocessing_for_training(images):
+    """
+    It will preprocess the input image for training.
+    :param image for training to be proprecessed in each epoch
+    :return proprecessed image for training
+    """
     distorted_image = random_flip_left_right(images)
     distorted_image = random_bright(distorted_image)
     distorted_image = random_contrast(distorted_image)
@@ -87,6 +92,57 @@ def preprocessing_for_testing(images):
     distorted_image = per_image_standardization(distorted_image)
     
     return distorted_image
+
+def separate_and_preprocess_for_gos(device_train_data):
+    """
+    It will fetch and preprocess (i.e., randomly crop each image for training) 
+    the training images for the target device.
+    :param dictionary storing traing images and labels for target devices
+    :return the target device data (i.e., training images, training labels) have been seperated and preprocessed
+    """
+    train_image_crop = np.stack([random_crop(device_train_data[0][i], 24, 24) for i in range(len(device_train_data[0]))], axis=0)
+    train_new_image, train_new_label = train_image_crop, device_train_data[1]
+    # Shuffle for 20 times
+    for random_ in range(20):
+        train_new_image, train_new_label = shuffle(train_new_image, 
+                                                   train_new_label, 
+                                                   random_state=randint(0, train_image_crop.shape[0]))
+
+    return train_new_image, train_new_label
+
+def evaluate_with_new_model_for_gos(model_x, training_info, test_images, test_label):
+    """
+    It will evaluate the new model weight which is aggregrated from all client model.
+    :param the model class for evaluation
+    :param dictionary contains training detailed settings
+    :param original images for testing
+    :param original labels for testing
+    :return the evaluation result of the input model
+    """
+    # Preprocess the images and labels for tesing.
+    test_new_image, test_new_label = prepare_for_evaluate(test_images, test_label)
+    history_temp = model_x.weight.evaluate(test_new_image, 
+                                            test_new_label, 
+                                            batch_size=training_info["center_batch_size"],
+                                            verbose=training_info["show"])
+    return history_temp
+
+def prepare_for_evaluate(test_images, test_label):
+    """
+    It will preprocess and return the images and labels for tesing.
+    :param original images for testing
+    :param original labels for testing
+    :return preprocessed images
+    :return preprocessed labels
+    """
+    test_d = np.stack([preprocessing_for_testing(test_images[i]) for i in range(10000)], axis=0)
+    test_new_image, test_new_label = test_d, test_label
+    
+    # Shuffle for 20 times
+    for time in range(20):
+        test_new_image, test_new_label = shuffle(test_d, test_label, 
+                                            random_state=randint(0, test_images.shape[0]))
+    return test_new_image, test_new_label
 
 # Prepare for the training data with providing the data range (for Gossip Learning)
 def prepare_for_training_data_selected_random_range(device_num, data_range, train_images, train_labels):
