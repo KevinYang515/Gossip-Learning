@@ -17,7 +17,7 @@ from data.data_utils import load_cifar10_data, train_test_label_to_categorical
 
 from math import floor
 from sklearn.utils import shuffle
-from keras import backend as K
+# from keras import backend as K
 from keras.preprocessing.image import ImageDataGenerator
 
 with tf.device('/device:GPU:0'):
@@ -61,8 +61,7 @@ def main(argv):
         
             for _ in range(training_info["num_round"]):
                 print("\033[1m" + "\n" + file + ", Round: " + str(_) + '\033[0m')
-                start_with = 0
-                end_with = 0
+                start_with, end_with = 0, 0
 
                 for device in device_client_dic:
                     if (_ == 0):
