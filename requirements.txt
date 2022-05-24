@@ -1,6 +1,6 @@
 # conda install -c anaconda tensorflow-gpu=1.15
 tensorflow==1.15.0
-tensorflow-gpu==1.15.0
+tensorflow-gpu==2.6.4
 # # conda install -c conda-forge matplotlib
 # matplotlib==3.3.0
 # conda install -c conda-forge opencv
