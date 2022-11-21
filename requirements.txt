@@ -1,5 +1,5 @@
 # conda install -c anaconda tensorflow-gpu=1.15
-tensorflow==1.15.0
+tensorflow==2.9.3
 tensorflow-gpu==1.15.0
 # # conda install -c conda-forge matplotlib
 # matplotlib==3.3.0
